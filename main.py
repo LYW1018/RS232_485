@@ -1,26 +1,28 @@
+'''
 # print('RS232_485')
 import minimalmodbus
 import time
 
-c = minimalmodbus.Instrument(port='com9', slaveaddress=1)
+c = minimalmodbus.Instrument(port='COM9', slaveaddress=1)
 c.serial.baudrate = 9600
 c.serial.bytesize = 7
 c.serial.parity = 'E'
 c.serial.stopbits = 1
 c.serial.timeout = 1
 c.mode = minimalmodbus.MODE_ASCII
-# c.mode=minimalmodbus.MODE_RTU
+#c.mode=minimalmodbus.MODE_RTU
 c.clear_buffers_before_each_transaction = True
 c.close_port_after_each_call = True
-start_time=time.time()
-
+start_time = time.time()
+'''
 '''
 # 單一bit寫入
 c.write_bit(
-    registeraddress=int('800', 16),
-    value=1,
-    functioncode=5
-)
+     registeraddress=int('500', 16),
+     value=0,
+     functioncode=5
+ )
+
 '''
 '''
 # 單一bit讀取
@@ -115,6 +117,7 @@ for n in ['&','~','&~']:
     Tmp2=int(n.encode('utf-8').hex(),16)#文字變成16進制,再轉成10進制
     print(Tmp2)
 '''
+'''
 c.write_string(
     registeraddress=int('17D0',16),
     textstring='AB',
@@ -127,3 +130,55 @@ Tmp=c.read_string(
     functioncode=3
 )
 print(Tmp)
+'''
+'''
+OriginalArray=['AB','CD','EF','GH','IJ',
+               'KL','MN','OP','QR','ST',
+               'UV','WX','YZ','ab','cd',
+               'ef','gh','ij','kl','mn',
+               'op','qr','st','uv','wx',
+               'yz','01','23','45','67',
+               '89','~@','#$','%^','&*',
+               '()','_+','<>','?/']
+final=[]
+for n in OriginalArray:
+    Tmp2=int(n.encode('utf-8').hex(),16)#文字變成16進制,再轉成10進制
+    final.append(Tmp2)
+print(final)
+
+c.write_registers(
+    registeraddress=int('17D0',16),
+    values=final
+)
+'''
+'''
+c.write_string(
+    registeraddress=int('17F7',16),
+    textstring='AB',
+    number_of_registers=1
+)
+Maxindex=(40)
+
+Tmp=c.read_registers(
+    registeraddress=int('17D0',16),
+    number_of_registers=Maxindex,
+    functioncode=3
+)
+Tmpindex=0
+TmpArray=[]
+TmpString=""
+for index, value in enumerate(Tmp):
+    Tmp1=hex(value)[2:]
+    Tmp2=hex(value)
+    TmpArray.append(bytes.fromhex(Tmp1).decode('utf-8'))
+print(TmpArray)
+print(Tmp2)
+'''
+
+from pyModbusTCP.client import ModbusClient
+
+c=ModbusClient(
+    host='192.168.1.5'
+)
+
+
